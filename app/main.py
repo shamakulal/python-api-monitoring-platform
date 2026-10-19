@@ -2,6 +2,7 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
+from prometheus_fastapi_instrumentator import Instrumentator
 from fastapi.responses import JSONResponse
 
 from app.config import (
@@ -39,7 +40,7 @@ app = FastAPI(
     version=APP_VERSION,
     lifespan=lifespan,
 )
-
+Instrumentator().instrument(app).expose(app)
 
 # Register API routes
 app.include_router(router)
