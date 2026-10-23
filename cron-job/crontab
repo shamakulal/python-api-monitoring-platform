@@ -1,0 +1,1 @@
+*/5 * * * * root cd /app && /usr/local/bin/python /app/health_check.py >> /var/log/health_check.log 2>&1
