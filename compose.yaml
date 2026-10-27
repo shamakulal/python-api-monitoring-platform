@@ -41,6 +41,33 @@ services:
       - "9100:9100"
     restart: unless-stopped
 
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - alertmanager_config:/etc/alertmanager-generated:ro
+    command:
+      - "--config.file=/etc/alertmanager-generated/alertmanager.yml"
+    restart: unless-stopped
+    depends_on:
+      - alertmanager-config
+
+  alertmanager-config:
+    image: python:3.13-slim
+    container_name: alertmanager-config
+    env_file:
+      - .env
+    volumes:
+      - ./monitoring/alertmanager.template.yml:/app/alertmanager.template.yml:ro
+      - ./monitoring/render_alertmanager.py:/app/render_alertmanager.py:ro
+      - alertmanager_config:/shared
+    command:
+      - python
+      - /app/render_alertmanager.py
+    restart: "no"
 volumes:
   prometheus_data:
   grafana_data:
+  alertmanager_config:

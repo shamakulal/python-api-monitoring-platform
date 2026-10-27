@@ -1,0 +1,20 @@
+FROM debian:bookworm-slim AS tools
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends gettext-base \
+    && rm -rf /var/lib/apt/lists/*
+
+FROM prom/alertmanager:latest
+
+USER root
+
+COPY --from=tools /usr/bin/envsubst /usr/local/bin/envsubst
+COPY --from=tools /usr/lib/x86_64-linux-gnu/libc.so.6 /tmp/libc.so.6
+COPY --from=tools /lib64/ld-linux-x86-64.so.2 /tmp/ld-linux-x86-64.so.2
+
+COPY alertmanager.template.yml /etc/alertmanager/alertmanager.template.yml
+COPY start-alertmanager.sh /start-alertmanager.sh
+
+RUN chmod +x /start-alertmanager.sh
+
+ENTRYPOINT ["/start-alertmanager.sh"]

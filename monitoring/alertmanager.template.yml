@@ -1,0 +1,18 @@
+global:
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: '${SMTP_USERNAME}'
+  smtp_auth_username: '${SMTP_USERNAME}'
+  smtp_auth_password: '${SMTP_PASSWORD}'
+  smtp_require_tls: true
+
+route:
+  receiver: 'gmail-alerts'
+  group_wait: 10s
+  group_interval: 1m
+  repeat_interval: 1h
+
+receivers:
+  - name: 'gmail-alerts'
+    email_configs:
+      - to: '${ALERT_EMAIL_TO}'
+        send_resolved: true
